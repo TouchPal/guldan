@@ -1,0 +1,31 @@
+<h1>资源搜索</h1>
+<div style="height:40px"></div>
+<div class="input-group input-group-lg">
+  <input type="text" class="form-control" placeholder="查询资源格式a.b.c" ng-model="page.search_key">
+  <span class="input-group-btn">
+    <button class="btn btn-primary" type="button" ng-click="search_resources()">搜索</button>
+  </span>
+</div>
+<div style="height:40px"></div>
+<h2>搜索结果</h2>
+<table class="table table-bordered">
+  <thead>
+    <th>资源类型</th>
+    <th>资源名称</th>
+  </thead>
+  <tbody ng-show="!page.resources || page.resources.length == 0">
+    <tr><td colspan="2" style="background-color:#eee;">没有找到匹配的资源</td></tr>
+  </tbody>
+  <tbody ng-show="!!page.resources">
+    <tr ng-repeat='resource in page.resources'>
+      <td>{{ resource.id }}</td>
+      <td><a ng-click="goto_resource(resource)">{{ resource.name }}</a></td>
+    </tr>
+  </tbody>
+</table>
+<!--
+<ul class='pager'>
+  <li ng-show='!!page.has_prev'><a ng-click='get_prev_resources()'>上一页</a></li>
+  <li ng-show='!!page.has_next'><a ng-click='get_next_resources()'>下一页</a></li>
+</ul>
+-->

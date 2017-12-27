@@ -1,0 +1,33 @@
+<h1>配置项历史版本</h1>
+<div style="height:20px"></div>
+<div style="height:33px;line-height:33px;margin-bottom:20px;">
+  <div class="pull-right">
+    <button class="btn btn-primary" ng-click="goto_parent()">上一级</button>
+  </div>
+</div>
+<div style="height:40px"></div>
+<table class="table table-bordered">
+  <thead>
+    <th>版本号</th>
+    <th>配置内容</th>
+    <th>可见性</th>
+    <th>创建时间</th>
+    <th>操作</th>
+  </thead>
+  <tbody ng-show="!page.versions || page.versions.length == 0">
+    <tr><td colspan="5" style="background-color:#eee;">没有历史版本</td></tr>
+  </tbody>
+  <tbody ng-show="!!page.versions">
+    <tr ng-repeat='version in page.versions'>
+      <td>{{ version.id }}</td>
+      <td>{{ version.content }} </td>
+      <td>{{ version.visibility }}</td>
+      <td>{{ version.updated_time }}</td>
+      <td><a ng-click="rollback(version)">回滚</a></td>
+    </tr>
+  </tbody>
+</table>
+<ul class='pager'>
+  <li ng-show='!!page.has_prev'><a ng-click='get_prev_versions()'>上一页</a></li>
+  <li ng-show='!!page.has_next'><a ng-click='get_next_versions()'>下一页</a></li>
+</ul>

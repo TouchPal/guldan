@@ -1,0 +1,50 @@
+<div class='main'>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Guldan</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <form class="navbar-form navbar-right" ng-show="!user">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="账号" ng-model="u.name">
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" placeholder="密码" ng-model="u.password" ng-keyup='login_keyup($event)'>
+          </div>
+          <button type="button" class="btn btn-success" ng-click="login()">登录</button>
+          <a class="btn btn-primary" href='#/dashboard/reg'>注册</a>
+        </form>
+        <ul class="nav navbar-nav navbar-right" ng-show="!!user">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user.name }} <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a ng-click="modify_profile()">修改个人信息</a></li>
+              <li><a ng-click="logout()">退出</a></li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right" ng-show="!!user">
+          <li ng-class="{ active: $state.includes('dashboard.index') }"><a href="#/dashboard/index">个人信息</a></li>
+          <li ng-class="{ active: $state.includes('dashboard.config') }"><a href="#/dashboard/config/index">配置管理</a></li>
+          <li ng-class="{ active: $state.includes('dashboard.config_search') }"><a href="#/dashboard/config_search">配置搜索</a></li>
+          <li ng-class="{ active: $state.includes('dashboard.history_operation') }"><a href="#/dashboard/history_operation">操作历史</a></li>
+          <li ng-class="{ active: $state.includes('dashboard.users') }" ng-show="user.name == 'admin'"><a href="#/dashboard/users">用户管理</a></li>
+          <li ng-class="{ active: $state.includes('dashboard.api') }"><a href="#/dashboard/api">文档中心</a></li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+  <div class="container-fluid" style="max-width: 900px">
+    <div ui-view="" />
+  </div>
+</div>

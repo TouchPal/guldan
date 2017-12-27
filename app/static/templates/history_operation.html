@@ -1,0 +1,40 @@
+<h1>操作历史搜索</h1>
+<div style="height:40px"></div>
+<div class="input-group input-group-lg">
+  <input type="text" class="form-control" placeholder="查询资源格式a.b.c" ng-model="page.search_key">
+  <span class="input-group-btn">
+    <button class="btn btn-primary" type="button" ng-click="search_operation_history()">搜索</button>
+  </span>
+</div>
+<div style="height:40px"></div>
+<table class="table table-bordered">
+  <thead>
+    <th>用户ID</th>
+    <th>用户名</th>
+    <th>操作</th>
+    <th>资源类型</th>
+    <th>操作前可见性</th>
+    <th>操作后可见性</th>
+    <th>操作时间</th>
+    <th></th>
+  </thead>
+  <tbody ng-show="!page.audits || page.audits.length == 0">
+    <tr><td colspan="8" style="background-color:#eee;">没有找到匹配的记录</td></tr>
+  </tbody>
+  <tbody ng-show="!!page.audits">
+    <tr ng-repeat='op in page.audits'>
+      <td>{{ op.user_id }}</td>
+      <td>{{ op.user_name }}</td>
+      <td>{{ op.op_name }}</td>
+      <td>{{ op.resource_type }}</td>
+      <td>{{ op.resource_visibility.before | visibility }}</td>
+      <td>{{ op.resource_visibility.after | visibility }}</td>
+      <td>{{ op.op_time }}</td>
+      <td><a ng-click="show_detail(op)">详细信息</a></td>
+    </tr>
+  </tbody>
+</table>
+<ul class='pager'>
+  <li ng-show='!!page.has_prev'><a ng-click='get_prev_history()'>上一页</a></li>
+  <li ng-show='!!page.has_next'><a ng-click='get_next_history()'>下一页</a></li>
+</ul>

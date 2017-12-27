@@ -1,0 +1,29 @@
+<h1>用户管理</h1>
+<div style="height:40px"></div>
+<div class="input-group input-group-lg">
+  <input type="text" class="form-control" placeholder="查询用户信息" ng-model="search_key">
+  <span class="input-group-btn">
+    <button class="btn btn-primary" type="button" ng-click="search_users()">搜索</button>
+  </span>
+</div>
+<div style="height:40px"></div>
+<table class="table table-bordered">
+  <thead>
+    <th>用户ID</th>
+    <th>用户名</th>
+    <th>操作</th>
+  </thead>
+  <tbody ng-show="!!users">
+    <tr ng-repeat='user in users'>
+      <td>{{ user.id }}</td>
+      <td>{{ user.name }}</td>
+      <td><a ng-click="modify_user(user)">修改</a></td>
+    </tr>
+  </tbody>
+</table>
+<!--
+<ul class='pager'>
+  <li ng-show='!!page.has_prev'><a ng-click='get_prev_users()'>上一页</a></li>
+  <li ng-show='!!page.has_next'><a ng-click='get_next_users()'>下一页</a></li>
+</ul>
+-->

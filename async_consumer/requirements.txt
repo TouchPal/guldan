@@ -1,0 +1,13 @@
+certifi==2017.11.5
+chardet==3.0.4
+gevent==1.2.2
+greenlet==0.4.12
+idna==2.6
+kazoo==2.4.0
+pykafka==2.7.0.dev2
+PyMySQL==0.7.11
+redis==2.10.6
+requests==2.18.4
+six==1.11.0
+tabulate==0.8.1
+urllib3==1.22

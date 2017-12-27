@@ -1,0 +1,53 @@
+<h1>项目管理</h1>
+<div style="height:20px"></div>
+<div style="height:33px;line-height:33px;margin-bottom:20px;">
+  <div style="display:inline-block;font-size:30px;">{{ project.name }}</div>
+  <div class="pull-right">
+    <button class="btn btn-primary" ng-click="goto_parent()">上一级</button>
+  </div>
+</div>
+<div class="btn-group btn-group-justified" role="group">
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-primary" ng-click="create_item()"
+      ng-disabled="project.access_mode!='modifier'&&project.access_mode!='viewer'">创建配置项</button>
+  </div>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-warning" ng-click="update_project()"
+      ng-disabled="project.access_mode!='modifier'">修改</button>
+  </div>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-danger" ng-click="delete_project()"
+      ng-disabled="project.access_mode!='modifier'">删除</button>
+  </div>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-success" ng-click="authorize_project()"
+      ng-disabled="project.access_mode!='modifier'">授权</button>
+  </div>
+</div>
+<h2 style="margin-bottom:20px;">项目属性</h2>
+<table class="table table-bordered">
+  <tr>
+    <td>可见性</td>
+    <td class="dropdown visibility">
+      <a class="dropdown-toggle" data-toggle="dropdown">{{ project.visibility | visibility }}</a>
+      <ul class="dropdown-menu">
+        <li><a ng-click="project.visibility='public'">公开</a></li>
+        <li><a ng-click="project.visibility='private'">私有</a></li>
+      </ul>
+    </td>
+  </tr>
+</table>
+<h2 style="margin-bottom:20px;">配置项列表</h2>
+<div class="list-group">
+  <a class="list-group-item" ng-repeat="item in project.items | orderBy : name : incr" ng-click="goto_item(item)">{{ item.name }}</a>
+</div>
+<h2 style="margin-bottom:20px;">权限列表</h2>
+<table class="table table-bordered">
+  <thead><th>用户名</th><th>用户权限</th></thead>
+  <tbody>
+    <tr ng-repeat="privilege in project.privileges | orderBy : type : incr">
+      <td>{{ privilege.user_name }}</td>
+      <td>{{ privilege.type }}</td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,13 @@
+db_master: mysql://root:root@192.168.3.21:3500/guldandb?charset=utf8mb4
+db_slave: mysql://root:root@192.168.3.21:3500/guldandb?charset=utf8mb4
+protocol: http
+port: 5000
+redis_url: redis://192.168.3.21:16379/6
+metrics_url: unset
+salt: test
+kafka_advertised_host_name: 192.168.3.21
+kafka_zk: 192.168.3.21:2182
+kafka_brokers: 192.168.3.21:10002
+kafka_item_grey_topic: guldan_item_grey
+kafka_version: 0.10.0.1
+kafka_consumer_group_name: guldan_item_grey_group

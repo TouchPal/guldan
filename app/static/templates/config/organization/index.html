@@ -1,0 +1,48 @@
+<h1>组织管理</h1>
+<div style="height:20px"></div>
+<h2 style="margin-bottom:20px;">{{ organization.name }}</h2>
+<div class="btn-group btn-group-justified" role="group">
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-primary" ng-click="create_project()"
+      ng-disabled="organization.access_mode!='modifier'&&organization.access_mode!='viewer'">创建项目</button>
+  </div>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-warning" ng-click="update_organization()"
+      ng-disabled="organization.access_mode!='modifier'">修改</button>
+  </div>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-danger" ng-click="delete_organization()"
+      ng-disabled="organization.access_mode!='modifier'">删除</button>
+  </div>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-success" ng-click="authorize_organization()"
+      ng-disabled="organization.access_mode!='modifier'">授权</button>
+  </div>
+</div>
+<h2 style="margin-bottom:20px;">组织属性</h2>
+<table class="table table-bordered">
+  <tr>
+    <td>可见性</td>
+    <td class="dropdown visibility">
+      <a class="dropdown-toggle" data-toggle="dropdown">{{ organization.visibility | visibility }}</a>
+      <ul class="dropdown-menu">
+        <li><a ng-click="organization.visibility='public'">公开</a></li>
+        <li><a ng-click="organization.visibility='private'">私有</a></li>
+      </ul>
+    </td>
+  </tr>
+</table>
+<h2 style="margin-bottom:20px;">项目列表</h2>
+<div class="list-group">
+  <a class="list-group-item" ng-repeat="project in organization.projects | orderBy : name : incr" ng-click="goto_project(project)">{{ project.name }}</a>
+</div>
+<h2 style="margin-bottom:20px;">权限列表</h2>
+<table class="table table-bordered">
+  <thead><th>用户名</th><th>用户权限</th></thead>
+  <tbody>
+    <tr ng-repeat="privilege in organization.privileges | orderBy : type : incr">
+      <td>{{ privilege.user_name }}</td>
+      <td>{{ privilege.type }}</td>
+    </tr>
+  </tbody>
+</table>

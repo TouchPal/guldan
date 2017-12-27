@@ -1,0 +1,13 @@
+<h1>组织列表</h1>
+<div style="height:40px"></div>
+<div style="height:48px;line-height:48px;">
+  <div style="display:inline-block;font-size:32px;">组织</div>
+  <div class="pull-right">
+    <button class="btn btn-primary" ng-click="create_organization()">创建组织</button>
+  </div>
+</div>
+<div style="height:40px;"></div>
+<div class="list-group" ng-show="!!organizations">
+  <a class="list-group-item" ng-repeat="organization in organizations | orderBy : name : incr" ng-click="goto_organization(organization)">{{ organization.name }}</a>
+</li>
+</div>

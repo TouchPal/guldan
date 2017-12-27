@@ -1,0 +1,16 @@
+[uwsgi]
+{{ protocol }} = 0.0.0.0:{{ port }}
+master = true
+chdir = .
+module = guldan_uwsgi:uwsgi_app
+processes = 10
+threads = 2
+; virtualenv = ; add your absolute path of your virtualenv here
+logto = /logs/guldan/guldan_uwsgi.log
+log-backupname = /logs/guldan/guldan_uwsgi.log.old
+log-format = %(ctime) - %(addr) - "%(method) %(uri) %(proto)" %(status) - %(msecs)ms - wid:%(wid)
+log-maxsize = 1073741824
+lazy-apps = true
+die-on-term = true
+logfile-chmod = 644
+listen = 65535

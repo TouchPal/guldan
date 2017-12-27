@@ -1,0 +1,29 @@
+version: '2'
+services:
+  mysql:
+    image: mysql:5.5.53
+    restart: always
+    ports:
+      - "3500:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+  redis:
+    image: redis:2.8
+    restart: always
+    ports:
+      - "16379:6379"
+  zookeeper:
+    image: zookeeper
+    restart: always
+    ports:
+      - "2182:2181"
+  kafka:
+    build: ./kafka
+    restart: always
+    ports:
+      - "10002:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.1.103
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

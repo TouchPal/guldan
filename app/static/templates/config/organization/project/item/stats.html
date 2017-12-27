@@ -1,0 +1,70 @@
+<h1>状态图</h1>
+<div style="height:20px"></div>
+<div style="height:33px;line-height:33px;margin-bottom:20px;">
+  <div style="display:inline-block;font-size:30px;">{{ item.name }}</div>
+  <div class="pull-right">
+    <button class="btn btn-primary" ng-click="goto_parent()">上一级</button>
+  </div>
+</div>
+<div class="stats">
+  <div class="searchbar">
+    <div class="input-group input-group-lg">
+      <input type="text" class="form-control" placeholder="搜索" ng-model="search_key" ng-keyup="search($event)">
+      <div class="input-group-btn dropdown">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ search_param | param }}</button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a ng-click="search_param='version'">当前版本</a></li>
+          <li><a ng-click="search_param='lastversion'">上一次版本</a></li>
+          <li><a ng-click="search_param='ip'">IP</a></li>
+          <li><a ng-click="search_param='instanceid'">实例号</a></li>
+          <li><a ng-click="search_param='clientversion'">客户端版本</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div style="height:40px;"></div>
+  <div class="btn-toolbar">
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-default" ng-model="viewModel" uib-btn-radio="'airscape'">鸟瞰图</button>
+      <button type="button" class="btn btn-default" ng-model="viewModel" uib-btn-radio="'detail'">详细图</button>
+    </div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-default" ng-model="refreshModel" uib-btn-radio="'auto'">实时刷新(1分钟)</button>
+      <button type="button" class="btn btn-default" ng-model="refreshModel" uib-btn-radio="'stop'">关闭刷新</button>
+    </div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-default" ng-model="coloredModel" uib-btn-radio="'version'">版本着色</button>
+      <button type="button" class="btn btn-default" ng-model="coloredModel" uib-btn-radio="'lastversion'">上一版本着色</button>
+      <button type="button" class="btn btn-default" ng-model="coloredModel" uib-btn-radio="'ip'">IP着色</button>
+      <button type="button" class="btn btn-default" ng-model="coloredModel" uib-btn-radio="'clientversion'">客户端版本着色</button>
+    </div>
+  </div>
+  <div ng-class="{true: 'x-panel airscape', false: 'x-panel'}[viewModel=='airscape']">
+    <div class="box" ng-repeat="stat in search_result" style='background-color:{{ stat.color }}'>
+      <div class="item">
+        <div class="name">Version:</div>
+        <div class="value">{{ stat.iver }}</div>
+      </div>
+      <div class="item">
+        <div class="name">IP:</div>
+        <div class="value">{{ stat.ip }}</div>
+      </div>
+      <div class="item">
+        <div class="name">InstanceID:</div>
+        <div class="value">{{ stat.ctype }}-{{ stat.cid }}</div>
+      </div>
+      <div class="item">
+        <div class="name">ClientVersion:</div>
+        <div class="value">{{ stat.cver }}</div>
+      </div>
+      <div class="item">
+        <div class="name">LastVersion:</div>
+        <div class="value">{{ stat.lver }}</div>
+      </div>
+      <div class="item">
+        <div class="name">LastPullTime:</div>
+        <div class="value">{{ stat.pull_time * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}</div>
+      </div>
+    </div>
+  </div>
+</div>

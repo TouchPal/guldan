@@ -1,0 +1,42 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- JS -->
+    <!-- load angular, nganimate, and ui-router -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js"></script>
+    <script src="/js/ace-diff.min.js"></script>
+    <script src="/js/diff_match_patch.js"></script>
+    <script src="/js/theme-tomorrow.js"></script>
+    <script src="/js/mode-text.js"></script>
+    <script src="/js/mode-json.js"></script>
+    <script src="/js/mode-yaml.js"></script>
+    <script src="/js/mode-xml.js"></script>
+    <script src="https://cdn.bootcss.com/angular.js/1.4.14/angular.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootbox.js/4.4.0/bootbox.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.14/angular-animate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="/js/angular-ui-router.min.js"></script>
+    <script src="/js/ui-ace.min.js"></script>
+    <script src="/js/controllers.js"></script>
+    <script src="/js/services.js"></script>
+    <script src="/js/app.js"></script>
+</head>
+
+<!-- apply our angular app -->
+<body ng-app="guldan">
+    <!-- views will be injected here -->
+    <div class="body">
+        <div data-ui-view=""></div>
+    </div>
+</body>
+</html>

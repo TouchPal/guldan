@@ -1,0 +1,45 @@
+<h1>配置项灰度发布</h1>
+<div style="height:20px"></div>
+<div style="height:33px;line-height:33px;margin-bottom:20px;">
+  <div style="display:inline-block;font-size:30px;">{{ item.name }}</div>
+  <div class="pull-right">
+    <button class="btn btn-primary" ng-click="goto_parent()">回到主配置</button>
+  </div>
+</div>
+<div class="btn-group btn-group-justified" role="group">
+  <div class="btn-group" role="group">
+    <button ng-disabled="item.access_mode!='modifier'" type="button" class="btn btn-guldan-gray" ng-click="publish_gray_item()">灰度发布</button>
+  </div>
+  <div class="btn-group" role="group">
+    <button ng-disabled="item.access_mode!='modifier'" type="button" class="btn btn-warning" ng-click="publish_item()">全量发布</button>
+  </div>
+  <div class="btn-group" role="group">
+    <button ng-disabled="item.access_mode!='modifier'" type="button" class="btn btn-danger" ng-click="delete_item()">删除</button>
+  </div>
+</div>
+<h2 style="margin-bottom:20px;">配置项属性</h2>
+<table class="table table-bordered">
+  <tr>
+    <td>可见性</td>
+    <td class="dropdown visibility">
+      <a class="dropdown-toggle" data-toggle="dropdown">{{ item.visibility | visibility }}</a>
+      <ul class="dropdown-menu">
+        <li><a ng-click="item.visibility='public'">公开</a></li>
+        <li><a ng-click="item.visibility='private'">私有</a></li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>配置项类型</td>
+    <td class="dropdown visibility">
+      <a class="dropdown-toggle" data-toggle="dropdown">{{ item.type | uppercase }}</a>
+      <ul class="dropdown-menu">
+        <li><a ng-click="item.type='Plain'">PLAIN</a></li>
+        <li><a ng-click="item.type='JSON'">JSON</a></li>
+        <li><a ng-click="item.type='XML'">XML</a></li>
+        <li><a ng-click="item.type='YAML'">YAML</a></li>
+      </ul>
+    </td>
+</table>
+<h2 style="margin-bottom:20px;">配置项内容</h2>
+<div ui-ace='{onLoad: aceLoaded, advanced: {fontSize: 14}}'></div>
