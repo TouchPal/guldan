@@ -48,28 +48,30 @@ class AuditTarget(object):
         )
 
     @staticmethod
-    def generate_versions_dict(resource_id, resource_type, audits):
+    def generate_versions_list(resource_id, resource_type, audits):
         resource_version_ids = [audit.version_id for audit in audits]
-        resource_version_ids.append(resource_version_ids[-1]-1)
-        versions_dict = AuditTarget.get_version_dict(resource_id, resource_type, resource_version_ids)
+        versions = ResourceVersion.get_versions_by_resource(resource_id, resource_type, resource_version_ids)
+        versions.sort(key=lambda x: x.version_id, reverse=True)
         current_version = AuditTarget.get_resource_current_version(resource_id, resource_type)
-        versions_dict[current_version.version_id] = current_version
+        versions.append(current_version)
 
-        return versions_dict
+        return versions
 
     def version_type_to_str(self, version_type):
         raise NotImplementedError()
 
     def get_audits_for_resource(self, resource_id, resource_type, limit=100, offset=0):
-        audits = Audit.get_audit_for_resource_id(resource_id, resource_type, limit=limit, offset=offset)
+        audits = Audit.get_audit_for_resource_id(resource_id, resource_type, limit=limit+1, offset=offset)
         if not audits:
             return []
 
-        versions_dict = AuditTarget.generate_versions_dict(resource_id, resource_type, audits)
+        versions = AuditTarget.generate_versions_list(resource_id, resource_type, audits)
 
-        for audit in audits:
-            version = versions_dict[audit.version_id]
-            last_version = versions_dict[audit.version_id-1]
+        for i in range(len(audits)-1):
+            audit = audits[i]
+            version = versions[i]
+            last_version = versions[i + 1]
+
             audit.data = {
                 "before": last_version.resource_content,
                 "after": version.resource_content
@@ -83,7 +85,7 @@ class AuditTarget(object):
                 "after": self.version_type_to_str(version.type)
             }
 
-        return audits
+        return audits[:-1]
 
 
 class OrgAuditTarget(AuditTarget):
