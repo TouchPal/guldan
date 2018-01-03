@@ -355,7 +355,128 @@ angular.module('guldan.services', [])
     },
     clone: function(o) {
       return _clone(o);
+    },
+    copy_from_ace_editor_to_clipboard: function(ace_editor, html_selector) {
+      var copyTextarea = document.querySelector(html_selector);
+      copyTextarea.style.display = 'block';
+      copyTextarea.value = ace_editor.getValue();
+      copyTextarea.select();
+      var msg = '配置项拷贝失败，请重试';
+      try {
+          var success = document.execCommand('copy');
+          msg = success ? '配置项成功拷贝' : msg;
+      } catch (err) {
+          msg += ': ' + err.toString(); 
+      } finally {
+        copyTextarea.value = "";
+        copyTextarea.style.display = 'none';
+      }
+      bootbox.dialog({message: msg, closeButton: true});
+    },
+    is_valid_resource_name: function (name) {
+        return /[a-b0-9_-]+/.test(name);
     }
   };
+}])
+
+.factory('$item_helper', ['$utils', '$connection', '$state', '$stateParams', function ($utils, $connection, $state, $stateParams) {
+    return {
+      create_item_in_modal_dialog: function ($scope, $compile) {
+        $scope.item_createor_editor = null;
+        var changeEditorMode = function(itemtype) {
+          const type = itemtype.toUpperCase();
+          if (type == "JSON") {
+            $scope.item_createor_editor.getSession().setMode('ace/mode/json');
+          } else if (type == "XML") {
+            $scope.item_createor_editor.getSession().setMode('ace/mode/xml');
+          } else if (type == "YAML") {
+            $scope.item_createor_editor.getSession().setMode('ace/mode/yaml');
+          } else {
+            $scope.item_createor_editor.getSession().setMode('ace/mode/text');
+          }
+        };
+        $scope.newItemEditorAceLoaded = function(ace_editor) {
+            ace_editor.setTheme('ace/theme/tomorrow');
+            ace_editor.renderer.setShowGutter(true);
+            ace_editor.getSession().setMode('ace/mode/text');
+            $scope.item_createor_editor = ace_editor;
+
+            var names = $scope.item.name.split(".");
+            $scope.new_item.name = names[names.length - 1];
+            $scope.new_item.type = $scope.item.type;
+            if ("content" in $scope.item) {
+              $scope.item_createor_editor.setValue($scope.item.content, -1);
+            }
+            $scope.$watch('new_item.type', changeEditorMode);
+        };
+        $utils.confirm("<div id='create-item'></div>", function(ok) {
+          if (ok) {
+            console.log($scope.new_item);
+            if (!$utils.is_valid_resource_name($scope.new_item.name)) {
+              $utils.error("名字不合法");
+              return;
+            }
+            let is_private = true;
+            if ($scope.new_item.visibility === "public") {
+              is_private = false;
+            }
+            console.log($scope.item_createor_editor.getValue());
+            var parent_id = "parent_id" in $scope.item ? $scope.item.parent_id : $stateParams.prid;
+            if ("parent_id" in $scope.item) {
+              $connection.create_item($scope.item.parent_id, $scope.new_item.name, $scope.item_createor_editor.getValue(), $scope.new_item.type, is_private).then(function (item) {
+                  $utils.dialog("配置项" + $scope.new_item.name + "成功创建");
+              }).catch(default_error_handle($state, $utils));
+            } else {
+              $connection.create_item($stateParams.prid, $scope.new_item.name, $scope.item_createor_editor.getValue(), $scope.new_item.type, is_private).then(function (item) {
+                  $scope.project.items.push({"id": item.id, "name": item.name});
+                }).catch(default_error_handle($state, $utils));
+            }
+          }
+        }, true);
+        $scope.item_type_options = [
+            {'name': 'PLAIN', 'value': 'PLAIN'},
+            {'name': 'JSON', 'value': 'JSON'},
+            {'name': 'XML', 'value': 'XML'},
+            {'name': 'YAML', 'value': 'YAML'},
+        ];
+        var msg = "<form class='form-horizontal'>" +
+                  "<div class='form-group'>" +
+                    "<div style='font-size:32px;margin-bottom:10px;padding-left:40px;'>创建配置项</div>" +
+                  "</div>" +
+                  "<div class='form-group'>" +
+                    "<label class='col-sm-2 control-label'>项目名称</label>" +
+                    "<div class='col-sm-10'>" +
+                      "<input type='text' class='form-control' placeholder='最长85个英文字符' ng-model='new_item.name' />" +
+                    "</div>" +
+                  "</div>" +
+                  "<div class='form-group'>" +
+                    "<label class='col-sm-2 control-label'>可见性</label>" +
+                    "<div class='col-sm-10'>" +
+                      "<select class='form-control' ng-model='new_item.visibility'>" +
+                        "<option value='public'>公开</option>" +
+                        "<option value='private'>私有</option>" +
+                      "</select>" +
+                    "</div>" +
+                  "</div>" +
+                  "<div class='form-group'>" +
+                    "<label class='col-sm-2 control-label'>配置项类型</label>" +
+                    "<div class='col-sm-10'>" +
+                      "<select class='form-control' ng-change='changeEditorMode()' ng-model='new_item.type'>" +
+                        "<option ng-selected='new_item.type.toUpperCase() === type.name' ng-repeat='type in item_type_options' value='{{type.value}}' >{{type.name}}</option>" +
+                      "</select>" +
+                    "</div>" +
+                  "</div>" +
+                  "<div class='form-group'>" +
+                    "<div class='col-sm-12'>" +
+                      "<div ui-ace='{onLoad: newItemEditorAceLoaded, advanced: {fontSize: 14}}'></div>" +
+                    "</div>" +
+                  "</div>" +
+                "</form>";
+        var compileFn = $compile(msg);
+        var $dom = compileFn($scope);
+        var $sut = angular.element(document.getElementById('create-item'));
+        $sut.append($dom);
+      }
+    };
 }]);
 

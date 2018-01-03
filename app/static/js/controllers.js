@@ -527,7 +527,7 @@ angular.module('guldan.controllers', ['guldan.services'])
   }
 })
 
-.controller('ProjectCtrl', function ($scope, $compile, $state, $stateParams, $connection, $utils) {
+.controller('ProjectCtrl', function ($scope, $compile, $state, $stateParams, $connection, $utils, $item_helper) {
   console.log('enter project controller');
   const prid = $stateParams.prid;
 
@@ -549,84 +549,10 @@ angular.module('guldan.controllers', ['guldan.services'])
     });
   });
 
-  $scope.item = { "name": "", "private": "0", "type": "Plain" };
+  $scope.item = { "name": "", "visibility": "public", "type": "PLAIN" };
+  $scope.new_item = {"name": "", "visibility": "public", "type": "PLAIN"};
   $scope.create_item = function() {
-    var __editor = null;
-    $scope.aceLoaded = function(_editor) {
-      _editor.setTheme('ace/theme/tomorrow');
-      _editor.renderer.setShowGutter(true);
-      _editor.getSession().setMode('ace/mode/text');
-      __editor = _editor;
-    }
-    $scope.changeEditorMode = function() {
-      const type = $scope.item.type.toUpperCase();
-      if (type == "JSON") {
-        __editor.getSession().setMode('ace/mode/json');
-      } else if (type == "XML") {
-        __editor.getSession().setMode('ace/mode/xml');
-      } else if (type == "YAML") {
-        __editor.getSession().setMode('ace/mode/yaml');
-      } else {
-        __editor.getSession().setMode('ace/mode/text');
-      }
-    }
-    $utils.confirm("<div id='create-item'></div>", function(ok) {
-      if (ok) {
-        console.log($scope.item);
-        if (!$scope.item.name) {
-          $utils.error("名字不能为空");
-          return;
-        }
-        let is_private = true;
-        if ($scope.item.private == "0") {
-          is_private = false;
-        }
-        console.log(__editor.getValue());
-        $connection.create_item(prid, $scope.item.name, __editor.getValue(), $scope.item.type, is_private).then(function(item) {
-          $scope.project.items.push({"id": item.id, "name": item.name});
-        }).catch(default_error_handle($state, $utils));
-      }
-    }, true);
-    var msg = "<form class='form-horizontal'>" +
-                "<div class='form-group'>" +
-                  "<div style='font-size:32px;margin-bottom:10px;padding-left:40px;'>创建项目</div>" +
-                "</div>" +
-                "<div class='form-group'>" +
-                  "<label class='col-sm-2 control-label'>项目名称</label>" +
-                  "<div class='col-sm-10'>" +
-                    "<input type='text' class='form-control' placeholder='最长85个英文字符' ng-model='item.name' />" +
-                  "</div>" +
-                "</div>" +
-                "<div class='form-group'>" +
-                  "<label class='col-sm-2 control-label'>可见性</label>" +
-                  "<div class='col-sm-10'>" +
-                    "<select class='form-control' ng-model='item.private'>" +
-                      "<option value=0>公开</option>" +
-                      "<option value=1>私有</option>" +
-                    "</select>" +
-                  "</div>" +
-                "</div>" +
-                "<div class='form-group'>" +
-                  "<label class='col-sm-2 control-label'>配置项类型</label>" +
-                  "<div class='col-sm-10'>" +
-                    "<select class='form-control' ng-change='changeEditorMode()' ng-model='item.type'>" +
-                      "<option value='Plain'>PLAIN</option>" +
-                      "<option value='JSON'>JSON</option>" +
-                      "<option value='XML'>XML</option>" +
-                      "<option value='YAML'>YAML</option>" +
-                    "</select>" +
-                  "</div>" +
-                "</div>" +
-                "<div class='form-group'>" +
-                  "<div class='col-sm-12'>" +
-                    "<div ui-ace='{onLoad: aceLoaded, advanced: {fontSize: 14}}'></div>"
-                  "</div>" +
-                "</div>" +
-              "</form>"
-    var compileFn = $compile(msg);
-    var $dom = compileFn($scope);
-    var $sut = angular.element(document.getElementById('create-item'));
-    $sut.append($dom);
+    $item_helper.create_item_in_modal_dialog($scope, $compile);
   };
   $scope.update_project = function() {
     $utils.confirm("是否确认需要修改该项目?", function(ok) {
@@ -751,7 +677,7 @@ angular.module('guldan.controllers', ['guldan.services'])
   }
 })
 
-.controller('ItemCtrl', function ($scope, $compile, $state, $stateParams, $connection, $utils) {
+.controller('ItemCtrl', function ($scope, $compile, $state, $stateParams, $connection, $utils, $item_helper) {
   console.log('enter item controller');
   const iid = $stateParams.iid;
   if (iid == null || typeof(iid) === 'undefined') {
@@ -766,8 +692,8 @@ angular.module('guldan.controllers', ['guldan.services'])
   }
 
   var __editor = null;
-  var changeEditorMode = function() {
-    const type = $scope.item.type.toUpperCase();
+  var changeEditorMode = function(itemtype) {
+    const type = itemtype.toUpperCase();
     if (type == "JSON") {
       __editor.getSession().setMode('ace/mode/json');
     } else if (type == "XML") {
@@ -785,6 +711,14 @@ angular.module('guldan.controllers', ['guldan.services'])
     _editor.getSession().setMode('ace/mode/text');
     __editor = _editor;
 
+    if ($scope.item.name !== "") {
+      var names = $scope.item.name.split(".");
+      $scope.new_item.name = names[names.length - 1];
+      $scope.new_item.type = $scope.item.type;
+      __editor.setValue($scope.item.content, -1);
+      $scope.$watch('new_item.type', changeEditorMode);
+      return;
+    }
     $connection.get_item(iid).then(function(item) {
       console.log(item);
       $scope.item = item;
@@ -807,11 +741,12 @@ angular.module('guldan.controllers', ['guldan.services'])
   }
 
   $scope.item = { "name": "", "visibility": "", "type": "" };
+  $scope.new_item =  {"name": "", "visibility": "public", "type": "PLAIN"};
   $scope.publish_item = function() {
     $utils.confirm("是否确认需要全量发布该配置项?", function(ok) {
       if (ok) {
         let is_private = false;
-        if ($scope.item.visibility == "private") {
+        if ($scope.item.visibility === "private") {
           is_private = true;
         }
         $connection.publish_item(iid, {"content": __editor.getValue(), "type": $scope.item.type, "private": is_private}).then(function(ok) {
@@ -935,7 +870,10 @@ angular.module('guldan.controllers', ['guldan.services'])
   };
   $scope.goto_parent = function() {
     $state.go("dashboard.config.proj", {prid: $scope.item.parent_id});
-  }
+  };
+  $scope.create_item_based_on_current = function() {
+    $item_helper.create_item_in_modal_dialog($scope, $compile);
+  };
 })
 
 .controller('GrayItemCtrl', function ($scope, $compile, $state, $stateParams, $connection, $utils) {
@@ -985,7 +923,7 @@ angular.module('guldan.controllers', ['guldan.services'])
     });
   }
 
-  $scope.item = { "name": "", "private": "", "type": "" };
+  $scope.item = { "name": "", "visibility": "", "type": "" };
   $scope.publish_item = function() {
     $utils.confirm("是否确认需要全量发布该配置项?", function(ok) {
       if (ok) {
@@ -1027,6 +965,9 @@ angular.module('guldan.controllers', ['guldan.services'])
   $scope.goto_parent = function() {
     const iid = $stateParams.iid;
     $state.go("dashboard.config.item.index", { iid: iid });
+  };
+  $scope.copy_grey_item_content = function() {
+    $utils.copy_from_ace_editor_to_clipboard(__editor, '#clipboard-content');
   }
 })
 
