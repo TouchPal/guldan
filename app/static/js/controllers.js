@@ -552,7 +552,7 @@ angular.module('guldan.controllers', ['guldan.services'])
   $scope.item = { "name": "", "visibility": "public", "type": "PLAIN" };
   $scope.new_item = {"name": "", "visibility": "public", "type": "PLAIN"};
   $scope.create_item = function() {
-    $item_helper.create_item_in_modal_dialog($scope, $compile);
+    $item_helper.create_item_for_project($scope, $compile);
   };
   $scope.update_project = function() {
     $utils.confirm("是否确认需要修改该项目?", function(ok) {
@@ -691,57 +691,11 @@ angular.module('guldan.controllers', ['guldan.services'])
     return;
   }
 
-  var __editor = null;
-  var changeEditorMode = function(itemtype) {
-    const type = itemtype.toUpperCase();
-    if (type == "JSON") {
-      __editor.getSession().setMode('ace/mode/json');
-    } else if (type == "XML") {
-      __editor.getSession().setMode('ace/mode/xml');
-    } else if (type == "YAML") {
-      __editor.getSession().setMode('ace/mode/yaml');
-    } else {
-      __editor.getSession().setMode('ace/mode/text');
-    }
-  }
-
-  $scope.aceLoaded = function(_editor) {
-    _editor.setTheme('ace/theme/tomorrow');
-    _editor.renderer.setShowGutter(true);
-    _editor.getSession().setMode('ace/mode/text');
-    __editor = _editor;
-
-    if ($scope.item.name !== "") {
-      var names = $scope.item.name.split(".");
-      $scope.new_item.name = names[names.length - 1];
-      $scope.new_item.type = $scope.item.type;
-      __editor.setValue($scope.item.content, -1);
-      $scope.$watch('new_item.type', changeEditorMode);
-      return;
-    }
-    $connection.get_item(iid).then(function(item) {
-      console.log(item);
-      $scope.item = item;
-      __editor.setValue(item.content, -1);
-      $scope.$watch('item.type', changeEditorMode);
-    }).catch(function(err) {
-      console.log(err);
-      $utils.error(err.msg, function() {
-        if (err.code == -2) {
-          $state.go('dashboard.index');
-        } else {
-          if ($stateParams.r == 'search') {
-            $state.go('dashboard.config_search');
-          } else {
-            $state.go('dashboard.config.index');
-          }
-        }
-      });
-    });
-  }
-
   $scope.item = { "name": "", "visibility": "", "type": "" };
   $scope.new_item =  {"name": "", "visibility": "public", "type": "PLAIN"};
+  var __editor = $item_helper.item_display($scope);
+
+
   $scope.publish_item = function() {
     $utils.confirm("是否确认需要全量发布该配置项?", function(ok) {
       if (ok) {
@@ -762,11 +716,11 @@ angular.module('guldan.controllers', ['guldan.services'])
   $scope.version_item = function() {
     console.log("goto version item");
     $state.go('dashboard.config.item.version', { oid: $stateParams.oid, prid: $scope.item.parent_id,  iid: iid });
-  }
+  };
   $scope.stats_item = function() {
     console.log("goto stats item");
     $state.go('dashboard.config.item.stats', { oid: $stateParams.oid, prid: $scope.item.parent_id,  iid: iid });
-  }
+  };
   $scope.delete_item = function() {
     $utils.confirm("是否确认需要删除该配置项?", function(ok) {
       if (ok) {
@@ -872,7 +826,7 @@ angular.module('guldan.controllers', ['guldan.services'])
     $state.go("dashboard.config.proj", {prid: $scope.item.parent_id});
   };
   $scope.create_item_based_on_current = function() {
-    $item_helper.create_item_in_modal_dialog($scope, $compile);
+    $item_helper.create_item_based_on_current($scope, $compile);
   };
 })
 
@@ -886,44 +840,10 @@ angular.module('guldan.controllers', ['guldan.services'])
     return;
   }
 
-  var __editor = null;
-  var changeEditorMode = function() {
-    const type = $scope.item.type.toUpperCase();
-    if (type == "JSON") {
-      __editor.getSession().setMode('ace/mode/json');
-    } else if (type == "XML") {
-      __editor.getSession().setMode('ace/mode/xml');
-    } else if (type == "YAML") {
-      __editor.getSession().setMode('ace/mode/yaml');
-    } else {
-      __editor.getSession().setMode('ace/mode/text');
-    }
-  }
-
-  $scope.aceLoaded = function(_editor) {
-    _editor.setTheme('ace/theme/tomorrow');
-    _editor.renderer.setShowGutter(true);
-    _editor.getSession().setMode('ace/mode/text');
-    __editor = _editor;
-
-    $connection.get_item(iid, true).then(function(item) {
-      console.log(item);
-      $scope.item = item;
-      __editor.setValue(item.content, -1);
-      $scope.$watch('item.type', changeEditorMode);
-    }).catch(function(err) {
-      console.log(err);
-      $utils.error(err.msg, function() {
-        if (err.code == -2) {
-          $state.go('dashboard.index');
-        } else {
-          $state.go('dashboard.config.index');
-        }
-      });
-    });
-  }
-
   $scope.item = { "name": "", "visibility": "", "type": "" };
+  $scope.new_item =  {"name": "", "visibility": "public", "type": "PLAIN"};
+  var __editor = $item_helper.item_display($scope);
+
   $scope.publish_item = function() {
     $utils.confirm("是否确认需要全量发布该配置项?", function(ok) {
       if (ok) {
@@ -966,9 +886,6 @@ angular.module('guldan.controllers', ['guldan.services'])
     const iid = $stateParams.iid;
     $state.go("dashboard.config.item.index", { iid: iid });
   };
-  $scope.copy_grey_item_content = function() {
-    $utils.copy_from_ace_editor_to_clipboard(__editor, '#clipboard-content');
-  }
 })
 
 .controller('VersionCtrl', function ($scope, $state, $stateParams, $location, $connection, $utils) {
