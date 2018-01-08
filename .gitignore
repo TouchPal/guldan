@@ -1,0 +1,9 @@
+# Created by .ignore support plugin (hsz.mobi)
+#
+guldanenv/
+guldan.log
+guldan_audit.log
+guldan.error
+*.pyc
+.DS_Store
+.cache/
