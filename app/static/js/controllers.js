@@ -907,7 +907,7 @@ angular.module('guldan.controllers', ['guldan.services'])
 
   $scope.get_prev_versions = function() {
     var offset = $scope.page.offset || 0;
-    offset = Math.floor(offset / 10) * 10 + 10;
+    offset = Math.floor(offset / 10) * 10 - 10;
     $connection.get_item_versions(iid, offset).then(function(page) {
       $location.search("offset", page.offset);
       $scope.page = page;
@@ -915,7 +915,7 @@ angular.module('guldan.controllers', ['guldan.services'])
   };
   $scope.get_next_versions = function() {
     var offset = $scope.page.offset || 0;
-    offset = Math.floor(offset / 10) * 10 - 10;
+    offset = Math.floor(offset / 10) * 10 + 10;
     $connection.get_item_versions(iid, offset).then(function(page) {
       $location.search("offset", page.offset);
       $scope.page = page;
