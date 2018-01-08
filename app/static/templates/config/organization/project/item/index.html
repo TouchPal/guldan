@@ -50,7 +50,12 @@
       </ul>
     </td>
 </table>
-<h2 style="margin-bottom:20px;">配置项内容</h2>
+<div style="height:33px;line-height:33px;margin-bottom:20px;">
+  <div style="display:inline-block;font-size:30px;font-weight:500;">配置项内容</div>
+  <div class="pull-right">
+    <button class="btn btn-default" ng-click="create_item_based_on_current()">基于该内容创建新配置项</button>
+  </div>
+</div>
 <div ui-ace='{onLoad: aceLoaded, advanced: {fontSize: 14}}'></div>
 <h2 style="margin-bottom:20px;">权限列表</h2>
 <table class="table table-bordered">
@@ -62,3 +67,6 @@
     </tr>
   </tbody>
 </table>
+
+<!-- testarea of helping clip -->
+<textarea id="clipboard-content" style="display: none;"></textarea>
