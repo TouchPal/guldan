@@ -830,7 +830,7 @@ angular.module('guldan.controllers', ['guldan.services'])
   };
 })
 
-.controller('GrayItemCtrl', function ($scope, $compile, $state, $stateParams, $connection, $utils) {
+.controller('GrayItemCtrl', function ($scope, $compile, $state, $stateParams, $connection, $utils, $item_helper) {
   console.log('enter gray item controller');
   const iid = $stateParams.iid;
   if (iid == null || typeof(iid) === 'undefined') {
