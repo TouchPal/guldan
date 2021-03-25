@@ -28,7 +28,7 @@ ptyprocess==0.5.1
 Pygments==2.2.0
 pykafka==2.6.0
 pyparsing==2.2.0
-PyYAML==3.12
+PyYAML==5.4
 redis==2.10.6
 requests==2.14.2
 scandir==1.5
